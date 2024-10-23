@@ -8,6 +8,7 @@ const taskInput = document.getElementById('task');
 const descriptionInput = document.getElementById('description');
 const dueDateInput = document.getElementById('dueDate');
 const priorityInput = document.getElementById('priority');
+const buttonlistener = document.querySelectorAll('button');
 
 function displayAddTaskForm() {
   inputContainer.style.display = 'flex';
@@ -39,17 +40,15 @@ function addTask() {
     console.log(tasks);
   }
 
-
-
 function displayNewTask(task) {
     const taskDiv = document.createElement('tr');
-    taskDiv.id = `tr${tasks.length}`;
+    taskDiv.id = `tr${tasks.length - 1}`;
     taskDiv.innerHTML = `<td>${task.task}</td>`
     taskDiv.innerHTML += `<td>${task.description}</td>`
     taskDiv.innerHTML += `<td>${task.dueDate}</td>`
     taskDiv.innerHTML += `<td>${task.priority}</td>`
     taskDiv.innerHTML += `<td><input type="checkbox"></td>`;
-    taskDiv.innerHTML += `<td><button id="button${tasks.length}">X</button></td>`;
+    taskDiv.innerHTML += `<td><button class ="removebutton" id="button${tasks.length -1}">X</button></td>`;
     taskrow.appendChild(taskDiv);
     }
 
@@ -59,7 +58,34 @@ function clearForm() {
     dueDateInput.value = '';
     priorityInput.value = '';
   }
-    
+
+taskrow.addEventListener('click', (e) => {
+    if (e.target.className === 'removebutton') {
+        const taskRow = e.target.parentElement.parentElement;
+        const rowId = taskRow.id;
+        const numericPart = rowId.match(/\d+/)[0];
+        const rowIndex = Number(numericPart);
+        deleteTask(taskRow.id);
+    }
+});
+
+
+
+function updateExistingTaskID() {
+    const taskRows = document.querySelectorAll('[id^="tr"]');
+    taskRows.forEach((taskDiv, index) => {
+        taskDiv.id = `tr${index}`; 
+    });
+}
+
+
+function deleteTask(taskId) {
+    const numericPart = taskId.match(/\d+/)[0];
+    const rowIndex = Number(numericPart);
+    tasks.splice(rowIndex, 1);
+    document.getElementById(taskId).remove();
+    updateExistingTaskID();
+}
 
 
 addTaskButton.addEventListener('click', displayAddTaskForm);
