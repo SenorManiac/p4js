@@ -10,17 +10,18 @@
 <body>
     <div class="container">
         <h1>What to do!</h1>
-        <div class="input-container">
+        <button id="addtask">Add Task</button>
+        <div id="input-container">
             <form id="task-form">
                 <label for="task">Task</label>
                 <input type="text" id="task" placeholder="Add a task...">
                 <label for="date">Due Date</label>
-                <input type="date" id="date">
+                <input type="date" id="dueDate">
                 <label for="description">Description</label>
                 <input type="text" id="description" placeholder="Task description">
                 <label for="priority">Priority</label>
                 <input type="dropdown" id="priority" placeholder="">                
-                <button type="submit">Add Task</button>
+                <button type="submit" id="submit-button">Add Task</button>
             </form>
         </div>
         <div class="tasks-container">
@@ -31,18 +32,18 @@
                         <th>Due Date</th>
                         <th>Description</th>
                         <th>Priority</th>
-                        <th>Completed</th>
-                        <th>Cancel</th>
+                        <th>Done</th>
+                        <th>Remove</th>
                     </tr>
                 </thead>
                 <tbody id="tasks">
-                    <tr>
+                    <tr id="tr1">
                         <td>Task 1</td>
                         <td>Due Date 1</td>
                         <td>Description 1</td>
                         <td>Priority 1</td>
                         <td><input type="checkbox"></td>
-                        <td><button>Cancel</button></td>
+                        <td><button>X</button></td>
                     </tr>
                   
                 </tbody>
