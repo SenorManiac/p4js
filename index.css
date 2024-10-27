@@ -30,6 +30,29 @@ body{
 
 }
 
+.project_container{
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    margin: 20px 0;
+    padding: 0px 20px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 0.5em;
+    font-weight: 700;
+    flex: 1;
+}
+
+.project_title{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.projectcollapse{
+    display: block;
+    height: 1.5em;
+    }
 
 #input-container {
     display: none;
@@ -66,6 +89,41 @@ form{
     
     
 
+}
+
+
+    .tasks_container_show {
+        display: block;
+        max-height: 60vh;
+        overflow-y: auto; 
+        overflow-x: hidden; 
+        box-sizing: border-box; 
+        width: 100%; 
+        margin: 1vw auto; 
+        scrollbar-width: thin; 
+        scrollbar-color: transparent transparent; 
+    }
+
+    .tasks_container_show::-webkit-scrollbar {
+        width: 8px; 
+    }
+
+    .tasks_container_show::-webkit-scrollbar-thumb {
+        background-color: transparent; 
+    }
+
+    .tasks_container_show:hover::-webkit-scrollbar-thumb {
+        background-color: #292727; 
+    }
+
+    
+
+
+select{
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 0.5em;
 }
 
 label{
@@ -109,8 +167,8 @@ input[type="dropdown"]{
 
 table{
     display: flex;
-    width: 80vw;
-    margin: 20px 0;
+    width: 95%;
+    margin: 10px auto;
     padding: 20px;
     background-color: #fff;
     border-radius: 0.5em;
@@ -136,4 +194,5 @@ td{
 th{
     padding: 10px;
     background-color: #f0f0f0;
+    text-align: center;
 }

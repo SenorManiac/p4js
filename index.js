@@ -88,6 +88,34 @@ function deleteTask(taskId) {
 }
 
 
+function toggleProject(e){
+    if(e.target.parentElement.parentElement.classList.contains("hide") == false 
+    && e.target.classList.contains("projectcollapse") == true){
+        e.target.parentElement.parentElement.classList.add("hide")   
+    }else if(e.target.parentElement.parentElement.classList.contains("hide") == true 
+    && e.target.classList.contains("projectcollapse") == true){
+        e.target.parentElement.parentElement.classList.remove("hide")   
+    }
+};
+    
+
+function hideProject(){
+    const project = document.querySelectorAll('.tasks_container_show');
+    for (let i = 0; i < project.length; i++){
+        if(project[i].parentElement.classList.contains('hide') == true){
+            project[i].style.display = 'none';}
+        else if(project[i].parentElement.classList.contains('hide') == false){
+            project[i].style.display = 'block';}
+    }
+}
+
+
+document.body.addEventListener('click', (e) => {
+   toggleProject(e);
+    hideProject();
+});
+
+
 addTaskButton.addEventListener('click', displayAddTaskForm);
 submitButton.addEventListener('click', (e) => {
     addTask();
