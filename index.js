@@ -1,126 +1,222 @@
-const addTaskButton = document.getElementById('addtask');
 const inputContainer = document.getElementById('input-container');
 const submitButton = document.getElementById('submit-button');
-const formid = document.getElementById('task-form');
-const taskrow = document.getElementById('tasks');
-const tasks = [];
 const taskInput = document.getElementById('task');
 const descriptionInput = document.getElementById('description');
 const dueDateInput = document.getElementById('dueDate');
 const priorityInput = document.getElementById('priority');
-const buttonlistener = document.querySelectorAll('button');
 
-function displayAddTaskForm() {
-  inputContainer.style.display = 'flex';
-}
-document.body.addEventListener('click', (event) => {
-  if (event.target == inputContainer) {
-    console.log(event.target);
-   hideAddTaskForm();
+// Array to hold all projects, each containing its own task list
+let projects = [
+  {
+    projectId: 1,
+    projectName: 'Project 1',
+    tasks: []
   }
-});
+];
+
+function saveProjectsToLocal() {
+  localStorage.setItem('projects', JSON.stringify(projects));
+}
+
+function loadProjectsFromLocal() {
+  const storedProjects = localStorage.getItem('projects');
+  if (storedProjects) {
+    projects = JSON.parse(storedProjects);
+    renderProjects(); // Render only once at page load
+  }
+}
+
+function renderProjects() {
+  const container = document.getElementById('container');
+  container.innerHTML = `
+    <h1>What to do!</h1>
+    <div id="input-container">
+      <form id="task-form">
+        <label for="task">Task</label>
+        <input type="text" id="task" placeholder="Add a task..." required>
+        <label for="dueDate">Due Date</label>
+        <input type="date" id="dueDate" required>
+        <label for="description">Description</label>
+        <input type="text" id="description" placeholder="Task description" required>
+        <label for="priority">Priority</label>
+        <select id="priority" name="priority" required>
+          <option value="Low">Low</option>
+          <option value="Medium">Medium</option>
+          <option value="High">High</option>
+        </select>
+        <button type="submit" id="submit-button">Add Task</button>
+      </form>
+    </div>
+  `;
+
+  projects.forEach((project, projectIndex) => {
+    const projectDiv = document.createElement('div');
+    projectDiv.classList.add('project_container');
+
+    projectDiv.innerHTML = `
+      <div class="project_title">
+        <h2>${project.projectName}</h2>
+        <div class="projectbuttons">
+          <button class="addtask" data-index="${projectIndex}">+</button>
+          <button class="projectcollapse">&#9660;</button>
+        </div>
+      </div>
+      <div class="tasks_container_show">
+        <table>
+          <thead>
+            <tr>
+              <th>Task</th><th>Due Date</th><th>Description</th>
+              <th>Priority</th><th>Done</th><th>Remove</th>
+            </tr>
+          </thead>
+          <tbody class="tasks"></tbody>
+        </table>
+      </div>
+    `;
+
+    container.appendChild(projectDiv);
+
+    const taskContainer = projectDiv.querySelector('.tasks');
+    project.tasks.forEach(task => {
+      displayNewTask(projectIndex, task, taskContainer);
+    });
+  });
+
+  // Add the "Add Project" button
+  const addProjectDiv = document.createElement('div');
+  addProjectDiv.classList.add('addprojectdiv');
+  addProjectDiv.innerHTML = `<button class="addproject">Add Project</button>`;
+  container.appendChild(addProjectDiv);
+}
+
+function displayAddTaskForm(e) {
+  if (e.target.classList.contains('addtask')) {
+    const inputContainer = document.getElementById('input-container');
+    inputContainer.style.display = 'block'; // Show the modal
+    const projectIndex = parseInt(e.target.dataset.index, 10);    
+    inputContainer.dataset.projectIndex = projectIndex;
+    console.log('Modal opened for project index:', projectIndex);
+  }
+}
 
 function hideAddTaskForm() {
-  inputContainer.style.display = 'none';
+  const inputContainer = document.getElementById('input-container');
+
+  inputContainer.style.display = 'none'; // Hide the modal
 }
-
-class Task {
-  constructor(task, description, dueDate, priority, ) {
-    this.task = task;
-    this.description = description;
-    this.dueDate = dueDate;
-    this.priority = priority;
-  }
-}
-
-
-function addTask() {  
-    let newtask = new Task(taskInput.value, descriptionInput.value, dueDateInput.value, priorityInput.value);
-    tasks.push(newtask);
-    console.log(tasks);
-  }
-
-function displayNewTask(task) {
-    const taskDiv = document.createElement('tr');
-    taskDiv.id = `tr${tasks.length - 1}`;
-    taskDiv.innerHTML = `<td>${task.task}</td>`
-    taskDiv.innerHTML += `<td>${task.description}</td>`
-    taskDiv.innerHTML += `<td>${task.dueDate}</td>`
-    taskDiv.innerHTML += `<td>${task.priority}</td>`
-    taskDiv.innerHTML += `<td><input type="checkbox"></td>`;
-    taskDiv.innerHTML += `<td><button class ="removebutton" id="button${tasks.length -1}">X</button></td>`;
-    taskrow.appendChild(taskDiv);
-    }
 
 function clearForm() {
-    taskInput.value = '';
-    descriptionInput.value = '';
-    dueDateInput.value = '';
-    priorityInput.value = '';
+  taskInput.value = '';
+  descriptionInput.value = '';
+  dueDateInput.value = '';
+  priorityInput.value = '';
+}
+
+function addTask(projectIndex) {
+  const newTask = {
+    id: projects[projectIndex].tasks.length,
+    task: taskInput.value,
+    description: descriptionInput.value,
+    dueDate: dueDateInput.value,
+    priority: priorityInput.value
+  };
+  projects[projectIndex].tasks.push(newTask);
+  saveProjectsToLocal();
+
+  // Display the new task in the corresponding project
+  const taskContainer = document.querySelectorAll('.tasks')[projectIndex];
+  displayNewTask(projectIndex, newTask, taskContainer);
+
+  hideAddTaskForm(); // Only close the modal after adding the task
+  clearForm(); // Clear the form
+}
+
+function displayNewTask(projectIndex, task, taskContainer) {
+  const taskDiv = document.createElement('tr');
+  taskDiv.id = `tr${task.id}`;
+  taskDiv.innerHTML = `
+    <td>${task.task}</td>
+    <td>${task.dueDate}</td>
+    <td>${task.description}</td>
+    <td>${task.priority}</td>
+    <td><input type="checkbox"></td>
+    <td><button class="removebutton">X</button></td>
+  `;
+  taskContainer.appendChild(taskDiv);
+}
+
+function removeTask(e) {
+  if (e.target.classList.contains('removebutton')) {
+    const taskRow = e.target.parentElement.parentElement;
+    const projectIndex = Array.from(document.getElementsByClassName('tasks')).indexOf(taskRow.parentElement);
+    deleteTask(taskRow.id, projectIndex);
   }
-
-taskrow.addEventListener('click', (e) => {
-    if (e.target.className === 'removebutton') {
-        const taskRow = e.target.parentElement.parentElement;
-        const rowId = taskRow.id;
-        const numericPart = rowId.match(/\d+/)[0];
-        const rowIndex = Number(numericPart);
-        deleteTask(taskRow.id);
-    }
-});
-
-
-
-function updateExistingTaskID() {
-    const taskRows = document.querySelectorAll('[id^="tr"]');
-    taskRows.forEach((taskDiv, index) => {
-        taskDiv.id = `tr${index}`; 
-    });
 }
 
+function deleteTask(taskId, projectIndex) {
+  const numericPart = taskId.match(/\d+/)[0];
+  const rowIndex = Number(numericPart);
 
-function deleteTask(taskId) {
-    const numericPart = taskId.match(/\d+/)[0];
-    const rowIndex = Number(numericPart);
-    tasks.splice(rowIndex, 1);
-    document.getElementById(taskId).remove();
-    updateExistingTaskID();
+  projects[projectIndex].tasks.splice(rowIndex, 1);
+  document.getElementById(taskId).remove();
+  updateExistingTaskID(projectIndex);
+  saveProjectsToLocal();
 }
 
+function updateExistingTaskID(projectIndex) {
+  const taskRows = document.querySelectorAll('.tasks')[projectIndex].querySelectorAll('[id^="tr"]');
+  taskRows.forEach((taskDiv, index) => {
+    taskDiv.id = `tr${index}`;
+  });
+}
 
-function toggleProject(e){
-    if(e.target.parentElement.parentElement.classList.contains("hide") == false 
-    && e.target.classList.contains("projectcollapse") == true){
-        e.target.parentElement.parentElement.classList.add("hide")   
-    }else if(e.target.parentElement.parentElement.classList.contains("hide") == true 
-    && e.target.classList.contains("projectcollapse") == true){
-        e.target.parentElement.parentElement.classList.remove("hide")   
-    }
-};
-    
+function toggleProject(e) {
+  const parent = e.target.closest('.project_container');
+  if (e.target.classList.contains('projectcollapse')) {
+    const taskContainer = parent.querySelector('.tasks_container_show');
+    taskContainer.classList.toggle('hide');
+  }
+}
 
+function newProject() {
+  projects.push({
+    projectId: projects.length + 1,
+    projectName: `Project ${projects.length + 1}`,
+    tasks: []
+  });
+  saveProjectsToLocal();
+  renderProjects(); // Re-render projects to include the new project
+}
 function hideProject(){
-    const project = document.querySelectorAll('.tasks_container_show');
-    for (let i = 0; i < project.length; i++){
-        if(project[i].parentElement.classList.contains('hide') == true){
-            project[i].style.display = 'none';}
-        else if(project[i].parentElement.classList.contains('hide') == false){
-            project[i].style.display = 'block';}
-    }
+  const project = document.querySelectorAll('.tasks_container_show');
+  for (let i = 0; i < project.length; i++){
+      if(project[i].classList.contains('hide') == true){
+          project[i].style.display = 'none';}
+      else if(project[i].classList.contains('hide') == false){
+          project[i].style.display = 'block';}
+  }
 }
-
-
 document.body.addEventListener('click', (e) => {
-   toggleProject(e);
+  if (e.target.classList.contains('addtask')) {
+    clearForm();
+    displayAddTaskForm(e);
+  } else if (e.target.id === submitButton.id) {
+    e.preventDefault();
+    const projectIndex = parseInt(inputContainer.dataset.projectIndex, 10);
+    addTask(projectIndex);
+  } else if (e.target.classList.contains('addproject')) {
+    newProject();
+  } else if (e.target.classList.contains('removebutton')) {
+    removeTask(e);
+  } else if (e.target.classList.contains('projectcollapse')) {
+    toggleProject(e);
     hideProject();
+  }else if (e.target  == document.getElementById('input-container')){
+    hideAddTaskForm();
+  };
+
 });
 
-
-addTaskButton.addEventListener('click', displayAddTaskForm);
-submitButton.addEventListener('click', (e) => {
-    addTask();
-    displayNewTask(tasks[tasks.length - 1]);
-    hideAddTaskForm();
-    clearForm();
-    e.preventDefault()});
-    
+document.addEventListener('DOMContentLoaded', () => {
+  loadProjectsFromLocal(); // Load projects from local storage on page load
+});

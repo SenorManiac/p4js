@@ -8,19 +8,18 @@
     <script src="index.js" defer ></script>
 </head>
 <body>
-    <div class="container">
+    <div id="container">
         <h1>What to do!</h1>
-        <button id="addtask">Add Task</button>
-        <div id="input-container">
+            <div id="input-container">
             <form id="task-form">
                 <label for="task">Task</label>
-                <input type="text" id="task" placeholder="Add a task...">
+                <input type="text" id="task" placeholder="Add a task..." required>
                 <label for="date">Due Date</label>
-                <input type="date" id="dueDate">
+                <input type="date" id="dueDate" required>
                 <label for="description">Description</label>
-                <input type="text" id="description" placeholder="Task description">
+                <input type="text" id="description" placeholder="Task description" required>
                 <label for="priority">Priority</label>
-                <select id="priority" name="priority">     
+                <select id="priority" name="priority" required>     
                     <option value="Low">Low</option>
                     <option value="Medium">Medium</option>
                     <option value="High">High</option>
@@ -31,7 +30,10 @@
         <div class ="project_container">
             <div class="project_title">
                 <h2>Project</h2>
-                <button class="projectcollapse">&#9660;</button>
+                <div class="projectbuttons">
+                    <button class="addtask">+</button>
+                    <button class="projectcollapse">&#9660;</button>
+                </div>
             </div>
             <div class="tasks_container_show">
                 <table>
@@ -45,10 +47,13 @@
                             <th>Remove</th>
                         </tr>
                     </thead>
-                    <tbody id="tasks">      
+                    <tbody class="tasks">      
                     </tbody>
                 </table>
             </div>
+        </div>
+        <div class="addprojectdiv">
+            <button class="addproject">Add Project</button>
         </div>  
     </div>
     

@@ -5,7 +5,7 @@ body{
     padding: 0;
 }
 
-.container{
+#container{
     width: 100%;
     margin: 0 auto;
     padding: 0 20px;
@@ -16,18 +16,10 @@ body{
     justify-items: center;
 }
 
-#addtask{
-    display: block;
-    width: 100%;
-    max-width: 440px;
-    margin: 20px 0;
-    padding: 20px;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 0.5em;
-    font-weight: 700;
-    flex: 1;
 
+.projectbuttons{
+    display: flex;
+    gap: 1rem;
 }
 
 .project_container{
@@ -42,7 +34,11 @@ body{
     font-weight: 700;
     flex: 1;
 }
-
+.project_container button{
+    width: 2em;
+    padding: 2%;
+    height: 1.75em;
+}
 .project_title{
     display: flex;
     justify-content: space-between;
@@ -195,4 +191,21 @@ th{
     padding: 10px;
     background-color: #f0f0f0;
     text-align: center;
+}
+
+.addprojectdiv{
+    display: flex;
+    margin: 20px 0;
+    width: 80%;
+    justify-content: end;
+}
+
+.addproject{
+    padding: 10px;
+    border: 1px solid #ccc;
+    color: #fff;
+    font-weight: 700;
+    border-radius: 0.5em;
+    background-color: #0b74f6;
+    cursor: pointer;
 }
