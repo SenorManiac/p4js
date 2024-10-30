@@ -4,6 +4,7 @@ const taskInput = document.getElementById('task');
 const descriptionInput = document.getElementById('description');
 const dueDateInput = document.getElementById('dueDate');
 const priorityInput = document.getElementById('priority');
+let taskIndex = 0;
 
 // Array to hold all projects, each containing its own task list
 let projects = [
@@ -95,7 +96,8 @@ function displayAddTaskForm(e) {
     inputContainer.style.display = 'block'; // Show the modal
     const projectIndex = parseInt(e.target.dataset.index, 10);    
     inputContainer.dataset.projectIndex = projectIndex;
-    console.log('Modal opened for project index:', projectIndex);
+    taskIndex = projectIndex;
+    console.log('Modal opened for project index:', taskIndex);
   }
 }
 
@@ -120,6 +122,7 @@ function addTask(projectIndex) {
     dueDate: dueDateInput.value,
     priority: priorityInput.value
   };
+  console.log('Adding new task:', taskInput.value);
   projects[projectIndex].tasks.push(newTask);
   saveProjectsToLocal();
 
@@ -201,9 +204,9 @@ document.body.addEventListener('click', (e) => {
     clearForm();
     displayAddTaskForm(e);
   } else if (e.target.id === submitButton.id) {
+    console.log('Adding task to project index:', taskIndex);
+    addTask(taskIndex);
     e.preventDefault();
-    const projectIndex = parseInt(inputContainer.dataset.projectIndex, 10);
-    addTask(projectIndex);
   } else if (e.target.classList.contains('addproject')) {
     newProject();
   } else if (e.target.classList.contains('removebutton')) {
