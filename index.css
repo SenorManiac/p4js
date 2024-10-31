@@ -209,3 +209,29 @@ th{
     background-color: #0b74f6;
     cursor: pointer;
 }
+
+.done{
+    text-decoration: line-through;
+    text-decoration-thickness: 0.2em;
+}
+.projectName{display: flex;
+align-items: center;
+text-align: center;}
+
+.editproject{
+    border: none;
+    background-color: transparent;
+}
+
+.edit-project-name:focus{
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    margin: 10px 0;
+    font-weight: 700;
+    border: none;
+    outline: none;
+    text-decoration: underline;
+    font-size: 1rem;
+    
+}
+

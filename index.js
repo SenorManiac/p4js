@@ -56,8 +56,12 @@ function renderProjects() {
 
     projectDiv.innerHTML = `
       <div class="project_title">
-        <h2>${project.projectName}</h2>
+        <div class="projectName">
+          <h2>${project.projectName}</h2>
+          <button class="editproject"><i style="font-size:20px" class="fa">&#xf040;</i></button>
+        </div>
         <div class="projectbuttons">
+          <button class="removeproject">x</button>
           <button class="addtask" data-index="${projectIndex}">+</button>
           <button class="projectcollapse">&#9660;</button>
         </div>
@@ -81,6 +85,7 @@ function renderProjects() {
     project.tasks.forEach(task => {
       displayNewTask(projectIndex, task, taskContainer);
     });
+    loadDoneTasks();
   });
 
   // Add the "Add Project" button
@@ -108,6 +113,10 @@ function hideAddTaskForm() {
 }
 
 function clearForm() {
+  const taskInput = document.getElementById('task');
+  const descriptionInput = document.getElementById('description');
+  const dueDateInput = document.getElementById('dueDate');
+  const priorityInput = document.getElementById('priority');
   taskInput.value = '';
   descriptionInput.value = '';
   dueDateInput.value = '';
@@ -115,12 +124,22 @@ function clearForm() {
 }
 
 function addTask(projectIndex) {
+  const taskInput = document.getElementById('task');
+  const descriptionInput = document.getElementById('description');
+  const dueDateInput = document.getElementById('dueDate');
+  const priorityInput = document.getElementById('priority');
+  
+  if (!taskInput.value || !descriptionInput.value || !dueDateInput.value || !priorityInput.value) {
+    alert('Please fill out all fields');
+    return;
+  }
   const newTask = {
     id: projects[projectIndex].tasks.length,
     task: taskInput.value,
     description: descriptionInput.value,
     dueDate: dueDateInput.value,
-    priority: priorityInput.value
+    priority: priorityInput.value,
+    done: false
   };
   console.log('Adding new task:', taskInput.value);
   projects[projectIndex].tasks.push(newTask);
@@ -143,7 +162,7 @@ function displayNewTask(projectIndex, task, taskContainer) {
     <td>${task.description}</td>
     <td>${task.priority}</td>
     <td><input type="checkbox"></td>
-    <td><button class="removebutton">X</button></td>
+    <td><button class="removebutton">x</button></td>
   `;
   taskContainer.appendChild(taskDiv);
 }
@@ -199,12 +218,72 @@ function hideProject(){
           project[i].style.display = 'block';}
   }
 }
+
+function removeProject(e) {
+ 
+    const projectIndex = Array.from(document.getElementsByClassName('project_container')).indexOf(e.target.parentElement.parentElement);
+    projects.splice(projectIndex, 1);
+    saveProjectsToLocal();
+    renderProjects();
+  
+}
+
+function taskDone(e) {
+  if (e.target.type === 'checkbox') {
+    const taskRow = e.target.parentElement.parentElement;
+    const projectIndex = Array.from(document.getElementsByClassName('tasks')).indexOf(taskRow.parentElement);
+    const taskIndex = Array.from(taskRow.parentElement.children).indexOf(taskRow);
+    projects[projectIndex].tasks[taskIndex].done = e.target.checked;
+    e.target.checked ? taskRow.classList.add('done') : taskRow.classList.remove('done');
+    saveProjectsToLocal();
+  }
+}
+
+function loadDoneTasks() {
+  const doneTasks = projects.map(project => project.tasks.filter(task => task.done));
+  for (let i = 0; i < doneTasks.length; i++) {
+    doneTasks[i].forEach(task => {
+      const taskRow = document.getElementById(`tr${task.id}`);
+      taskRow.classList.add('done');
+      taskRow.querySelector('input[type="checkbox"]').checked = true;
+    });
+  }
+}
+
+function editProject(e) {
+  if (e.target.classList.contains('editproject')) {
+    const projectIndex = Array.from(document.getElementsByClassName('project_container')).indexOf(e.target.parentElement.parentElement.parentElement);
+    const projectTitleElement = e.target.closest('.project_title').querySelector('h2');
+    const currentProjectName = projectTitleElement.textContent;
+    projectTitleElement.innerHTML = `<input type="text" value="${currentProjectName}" class="edit-project-name">`;
+    
+    const inputElement = projectTitleElement.querySelector('.edit-project-name');
+    inputElement.focus();
+    inputElement.addEventListener('blur', () => {
+      const newProjectName = inputElement.value.trim();
+      if (newProjectName) {
+        projects[projectIndex].projectName = newProjectName;
+        saveProjectsToLocal();
+        renderProjects();
+      } else {
+        projectTitleElement.textContent = currentProjectName; // Revert back to the original name
+      }
+    });
+    if (newProjectName) {
+      projects[projectIndex].projectName = newProjectName;
+      saveProjectsToLocal();
+      renderProjects();
+    }
+  }
+}
+
 document.body.addEventListener('click', (e) => {
   if (e.target.classList.contains('addtask')) {
     clearForm();
     displayAddTaskForm(e);
   } else if (e.target.id === submitButton.id) {
     console.log('Adding task to project index:', taskIndex);
+    console.log('Task:', taskInput.value);
     addTask(taskIndex);
     e.preventDefault();
   } else if (e.target.classList.contains('addproject')) {
@@ -216,10 +295,18 @@ document.body.addEventListener('click', (e) => {
     hideProject();
   }else if (e.target  == document.getElementById('input-container')){
     hideAddTaskForm();
-  };
+  }else if (e.target.classList.contains('removeproject')) {
+    removeProject(e);
+  }else if (e.target.type === 'checkbox') {
+    taskDone(e);
+  }else if (e.target.classList.contains('editproject')) {
+    editProject(e);
+  }
 
 });
 
+
 document.addEventListener('DOMContentLoaded', () => {
   loadProjectsFromLocal(); // Load projects from local storage on page load
+  loadDoneTasks();
 });
